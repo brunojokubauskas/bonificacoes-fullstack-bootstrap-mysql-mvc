@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="index.css" />
+  <title>Interface de Usuário</title>
+</head>
+
+<body>
+  <header>
+    <h1 id="titulo"></h1>
+  </header>
+  <main>
+    <div>
+      <form id="funcionarioForm">
+        <label for="nomeCompleto">Nome:</label>
+        <input
+          name="nomeCompleto"
+          id="nomeCompleto"
+          class="form-control"
+          placeholder="Digite seu nome"
+          required
+        />
+
+        <label for="dataAdmissao">Data de admissão:</label>
+        <input type="date" name="dataAdmissao" id="dataAdmissao" class="form-control" />
+
+        <label for="salario">Salário:</label>
+        <input
+          type="number"
+          name="salario"
+          id="salario"
+          class="form-control"
+          placeholder="Digite o salário"
+        />
+
+        <label for="dataPagto">Data Pagamento:</label>
+        <input type="date" name="dataPagto" id="dataPagto" class="form-control" />
+
+        <label for="desempenho">Desempenho:</label>
+        <input
+          type="number"
+          name="desempenho"
+          id="desempenho"
+          class="form-control"
+          placeholder="Digite o desempenho"
+        />
+
+        <button type="submit" class="btn btn-primary">Novo</button>
+      </form>
+    </div>
+
+    <table id="funcionarioTable" class="table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Nome</th>
+          <th>Data Admissão</th>
+          <th>Salário</th>
+          <th>Data Pagamento</th>
+          <th>Desempenho</th>
+          <th>Bonificação</th>
+          <th>Excluir</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+  <footer></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Função para renderizar os dados na tabela
+    function renderTable(dados) {
+      const tbody = document.querySelector('#funcionarioTable tbody');
+      tbody.innerHTML = '';
+
+      dados.forEach((t) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${t.matricula}</td>
+          <td>${t.nome_completo}</td>
+          <td>${new Date(t.data_admissao).toISOString().slice(0, 16).replace(' T', ' ')}</td>
+          <td>${t.salario}</td>
+          <td>${new Date(t.data_pagto).toISOString().slice(0, 16).replace(' T', ' ')}</td>
+          <td>${t.desempenho}</td>
+          <td>${t.bonificacao}</td>
+          <td>
+            <button class="btn btn-danger" onclick="deleteFuncionario(${t.matricula})">Excluir</button>
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    // Função para enviar o formulário
+    function submitForm(event) {
+      event.preventDefault();
+
+      const form = document.getElementById('funcionarioForm');
+      const formData = new FormData(form);
+
+      // Processar os dados do formulário e enviar para o servidor (usando fetch, axios, etc.)
+      // Exemplo de como enviar usando fetch:
+      fetch('/funcionario/create', {
+        method: 'POST',
+        body: formData
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Atualizar a tabela com os novos dados
+          renderTable(data);
+
+          // Limpar o formulário
+          form.reset();
+        })
+        .catch((error) => console.error(error));
+    }
+
+    // Função para excluir um funcionário
+    function deleteFuncionario(matricula) {
+      // Enviar uma requisição para excluir o funcionário pelo ID (usando fetch, axios, etc.)
+      // Exemplo de como enviar usando fetch:
+      fetch(`/funcionario/${matricula}?_method=DELETE`, {
+        method: 'POST'
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Atualizar a tabela com os novos dados
+          renderTable(data);
+        })
+        .catch((error) => console.error(error));
+    }
+
+    // Função para obter os dados iniciais da tabela
+    function getDadosIniciais() {
+      // Obter os dados iniciais da tabela do servidor (usando fetch, axios, etc.)
+      // Exemplo de como obter usando fetch:
+      fetch('/funcionario')
+        .then((response) => response.json())
+        .then((data) => {
+          // Atualizar a tabela com os dados iniciais
+          renderTable(data);
+        })
+        .catch((error) => console.error(error));
+    }
+
+    // Função para definir o título
+    function setTitulo(titulo) {
+      document.getElementById('titulo').textContent = titulo;
+    }
+
+    // Chamadas de funções iniciais
+    getDadosIniciais();
+    setTitulo('Interface de Usuário');
+
+    // Adicionar evento de envio de formulário
+    document.getElementById('funcionarioForm').addEventListener('submit', submitForm);
+  </script>
+</body>
+
+</html>
