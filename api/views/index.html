@@ -17,44 +17,15 @@
   <main>
     <div>
       <form id="funcionarioForm">
-        <label for="nomeCompleto">Nome:</label>
-        <input
-          name="nomeCompleto"
-          id="nomeCompleto"
-          class="form-control"
-          placeholder="Digite seu nome"
-          required
-        />
-
-        <label for="dataAdmissao">Data de admissão:</label>
-        <input type="date" name="dataAdmissao" id="dataAdmissao" class="form-control" />
-
-        <label for="salario">Salário:</label>
-        <input
-          type="number"
-          name="salario"
-          id="salario"
-          class="form-control"
-          placeholder="Digite o salário"
-        />
-
-        <label for="dataPagto">Data Pagamento:</label>
-        <input type="date" name="dataPagto" id="dataPagto" class="form-control" />
-
-        <label for="desempenho">Desempenho:</label>
-        <input
-          type="number"
-          name="desempenho"
-          id="desempenho"
-          class="form-control"
-          placeholder="Digite o desempenho"
-        />
+        <!-- Formulário para adicionar novo funcionário -->
+        <!-- ... Seus campos de formulário aqui ... -->
 
         <button type="submit" class="btn btn-primary">Novo</button>
       </form>
     </div>
 
     <table id="funcionarioTable" class="table">
+      <!-- Tabela para exibir os dados dos funcionários -->
       <thead>
         <tr>
           <th>Id</th>
@@ -105,8 +76,7 @@
       const form = document.getElementById('funcionarioForm');
       const formData = new FormData(form);
 
-      // Processar os dados do formulário e enviar para o servidor (usando fetch, axios, etc.)
-      // Exemplo de como enviar usando fetch:
+      // Enviar os dados do formulário para a API
       fetch('/funcionario/create', {
         method: 'POST',
         body: formData
@@ -124,10 +94,9 @@
 
     // Função para excluir um funcionário
     function deleteFuncionario(matricula) {
-      // Enviar uma requisição para excluir o funcionário pelo ID (usando fetch, axios, etc.)
-      // Exemplo de como enviar usando fetch:
-      fetch(`/funcionario/${matricula}?_method=DELETE`, {
-        method: 'POST'
+      // Enviar uma requisição para excluir o funcionário pelo ID
+      fetch(`/funcionario/${matricula}`, {
+        method: 'DELETE'
       })
         .then((response) => response.json())
         .then((data) => {
@@ -139,8 +108,7 @@
 
     // Função para obter os dados iniciais da tabela
     function getDadosIniciais() {
-      // Obter os dados iniciais da tabela do servidor (usando fetch, axios, etc.)
-      // Exemplo de como obter usando fetch:
+      // Obter os dados iniciais da tabela do servidor
       fetch('/funcionario')
         .then((response) => response.json())
         .then((data) => {

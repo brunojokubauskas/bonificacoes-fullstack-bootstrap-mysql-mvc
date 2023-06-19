@@ -1,84 +1,66 @@
-const con = require('../database/conn');
-const Funcionario = require('../models/Funcionario');
+const con = require("../database/conn");
+const Funcionario = require("../models/Funcionario");
 
-// Cria um novo funcionário
 const createFuncionario = (req, res) => {
-  const funcionario = new Funcionario(req.body); // Cria uma instância da classe Funcionario com os dados do corpo da requisição
-
-  con.query(funcionario.create(), function (err, result) {
+  con.query(new Funcionario(req.body).create(), function (err, result) {
     if (err) {
-      return res.render('erro', { err: err }); // Renderiza a página de erro em caso de erro na consulta SQL
+      res.status(500).send({ err: err }).end();
     }
 
-    res.redirect('/funcionario/listar'); // Redireciona para a rota de listagem de funcionários
+    res.status(201).json(result);
   });
 };
 
-// Lê os dados de todos os funcionários
 const readFuncionario = (req, res) => {
-  const funcionario = new Funcionario(req.body); // Cria uma instância da classe Funcionario com os dados do corpo da requisição
-
-  con.query(funcionario.read(), function (err, result) {
+  con.query(new Funcionario(req.body).read(), function (err, result) {
     if (err) {
-      return res.render('erro', { err: err }); // Renderiza a página de erro em caso de erro na consulta SQL
+      res.status(500).send({ err: err }).end();
     }
 
-    res.render('index', { titulo: 'Bonificações', dados: result }); // Renderiza a página index com os dados dos funcionários
+    res.status(200).json(result);
   });
 };
 
-// Obtém um funcionário pelo nome
 const getByName = (req, res) => {
   const { nomeCompleto } = req.query;
 
-  const q = `SELECT * FROM funcionario WHERE nome_completo = '${nomeCompleto}'`; // Monta a consulta SQL para obter o funcionário pelo nome
+  const q = `SELECT * FROM funcionario WHERE nome_completo = '${nomeCompleto}'`;
   con.query(q, (err, result) => {
-    if (err) {
-      return res.status(404).send('Erro:' + err); // Retorna um erro 404 caso ocorra um erro na consulta SQL
+    if (err == null) {
+      res.status(200).json(result);
+    } else {
+      res
+        .status(404)
+        .send("Erro:" + err)
+        .end();
     }
-
-    res.status(200).json(result); // Retorna o resultado da consulta em formato JSON
   });
 };
 
-// Atualiza um funcionário
 const updateFuncionario = (req, res) => {
-  const funcionario = new Funcionario(req.body); // Cria uma instância da classe Funcionario com os dados do corpo da requisição
-
-  con.query(funcionario.update(), function (err, result) {
-    if (err) {
-      return res.render('erro', { err: err }); // Renderiza a página de erro em caso de erro na consulta SQL
-    }
-
+  con.query(new Funcionario(req.body).update(), function (err, result) {
     if (result.affectedRows > 0) {
-      res.redirect('/funcionario/listar'); // Redireciona para a rota de listagem de funcionários caso algum registro seja afetado
+      res.status(202).json(result);
     } else {
-      return res.render('erro', { err: 'Nenhum registro afetado.' }); // Renderiza a página de erro caso nenhum registro seja afetado
+      res.status(500).send({ err: err }).end();
     }
   });
 };
 
-// Exclui um funcionário
 const delFuncionario = (req, res) => {
-  const funcionario = new Funcionario(req.params); // Cria uma instância da classe Funcionario com os parâmetros da requisição
-
-  con.query(funcionario.del(), function (err, result) {
-    if (err) {
-      return res.render('erro', { err: err }); // Renderiza a página de erro em caso de erro na consulta SQL
-    }
-
+  con.query(new Funcionario(req.params).del(), function (err, result) {
     if (result.affectedRows > 0) {
-      res.redirect('/funcionario/listar'); // Redireciona para a rota de listagem de funcionários caso algum registro seja afetado
+      res.status(202).json(result);
     } else {
-      return res.render('erro', { err: 'Nenhum registro afetado.' }); // Renderiza a página de erro caso nenhum registro seja afetado
+      res.status(500).send({ err: err }).end();
     }
   });
 };
 
 module.exports = {
-  createFuncionario,
   readFuncionario,
   getByName,
-  updateFuncionario,
   delFuncionario,
+  createFuncionario,
+  updateFuncionario,
 };
